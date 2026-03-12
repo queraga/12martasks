@@ -77,7 +77,26 @@ app.get("/profile", authJWT, (req, res) => {
 
 app.put("/update-profile", authJWT, (req, res) => {
   const { email } = req.body;
-  const user = users.find((u = u.id === req.user.userId));
+  const user = users.find((u) => {
+    return u.id === req.user.userId;
+  });
+
+  if (!user) {
+    return res.status(404).json({ message: "User is not found" });
+  }
+
+  if (!email) {
+    return res.status(400).json({ message: "Email is required" });
+  }
+  user.email = email;
+
+  res.json({
+    message: "Profile updated successfully",
+    user: {
+      id: user.id,
+      email: user.email,
+    },
+  });
 });
 
 app.listen(PORT, () => {
